@@ -8,63 +8,81 @@ declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
 pub mod soltweet2 {
     use super::*;
 
-  pub fn close(_ctx: Context<CloseSoltweet2>) -> Result<()> {
-    Ok(())
-  }
+    // Create a user profile
+    pub fn create_profile(
+        ctx: Context<CreateProfile>,
+        username: String,
+        bio: String,
+        avatar_cid: String,
+    ) -> Result<()> {
+        let profile = &mut ctx.accounts.profile;
+        profile.username = username;
+        profile.bio = bio;
+        profile.avatar_cid = avatar_cid;
+        profile.authority = ctx.accounts.user.key();
+        Ok(())
+    }
 
-  pub fn decrement(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.soltweet2.count = ctx.accounts.soltweet2.count.checked_sub(1).unwrap();
-    Ok(())
-  }
-
-  pub fn increment(ctx: Context<Update>) -> Result<()> {
-    ctx.accounts.soltweet2.count = ctx.accounts.soltweet2.count.checked_add(1).unwrap();
-    Ok(())
-  }
-
-  pub fn initialize(_ctx: Context<InitializeSoltweet2>) -> Result<()> {
-    Ok(())
-  }
-
-  pub fn set(ctx: Context<Update>, value: u8) -> Result<()> {
-    ctx.accounts.soltweet2.count = value.clone();
-    Ok(())
-  }
+    // Create a new post (stores metadata, Shadow Drive CID)
+    pub fn create_post(ctx: Context<CreatePost>, content: String) -> Result<()> {
+        let post = &mut ctx.accounts.post;
+        post.user = ctx.accounts.user.key();
+        post.content = content;
+        post.timestamp = Clock::get()?.unix_timestamp;
+        post.tip_amount = 0;
+        Ok(())
+    }
 }
 
-#[derive(Accounts)]
-pub struct InitializeSoltweet2<'info> {
-  #[account(mut)]
-  pub payer: Signer<'info>,
-
-  #[account(
-  init,
-  space = 8 + Soltweet2::INIT_SPACE,
-  payer = payer
-  )]
-  pub soltweet2: Account<'info, Soltweet2>,
-  pub system_program: Program<'info, System>,
-}
-#[derive(Accounts)]
-pub struct CloseSoltweet2<'info> {
-  #[account(mut)]
-  pub payer: Signer<'info>,
-
-  #[account(
-  mut,
-  close = payer, // close account and return lamports to payer
-  )]
-  pub soltweet2: Account<'info, Soltweet2>,
-}
 
 #[derive(Accounts)]
-pub struct Update<'info> {
-  #[account(mut)]
-  pub soltweet2: Account<'info, Soltweet2>,
+pub struct CreateProfile<'info> {
+    #[account(
+        init,
+        payer = user,
+        space = UserProfile::INIT_SPACE,
+        seeds = [b"profile", user.key().as_ref()],
+        bump
+    )]
+    pub profile: Account<'info, UserProfile>,
+    #[account(mut)]
+    pub user: Signer<'info>,
+    pub system_program: Program<'info, System>,
 }
 
 #[account]
 #[derive(InitSpace)]
-pub struct Soltweet2 {
-  count: u8,
+pub struct UserProfile {
+    #[max_len(15)]
+    pub username: String, // e.g., "alice"
+    #[max_len(160)]
+    pub bio: String, // Short user bio
+    #[max_len(260)]
+    pub avatar_cid: String, // Shadow Drive CID for profile picture
+    pub authority: Pubkey, // Wallet that owns this profile
+}
+
+#[derive(Accounts)]
+pub struct CreatePost<'info> {
+    #[account(
+        init,
+        payer = user, 
+        space = Post::INIT_SPACE,
+        seeds = [b"post", user.key().as_ref()],
+        bump
+        )]
+    pub post: Account<'info, Post>,
+    #[account(mut)]
+    pub user: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct Post {
+    pub user: Pubkey, // Author's wallet
+    #[max_len(260)]
+    pub content: String, // Text content
+    pub timestamp: i64, // Unix timestamp
+    pub tip_amount: u64, // Total tips 
 }

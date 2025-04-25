@@ -3,7 +3,7 @@ import { ExplorerLink } from '../cluster/cluster-ui'
 import { WalletButton } from '../solana/solana-provider'
 import { AppHero, ellipsify } from '../ui/ui-layout'
 import { useSoltweet2Program } from './soltweet2-data-access'
-import { Soltweet2Create, Soltweet2List } from './soltweet2-ui'
+import SolTweetUI from './soltweet2-ui'
 
 export default function Soltweet2Feature() {
   const { publicKey } = useWallet()
@@ -20,9 +20,8 @@ export default function Soltweet2Feature() {
         <p className="mb-6">
           <ExplorerLink path={`account/${programId}`} label={ellipsify(programId.toString())} />
         </p>
-        <Soltweet2Create />
+        <SolTweetUI />
       </AppHero>
-      <Soltweet2List />
     </div>
   ) : (
     <div className="max-w-4xl mx-auto">
