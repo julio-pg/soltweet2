@@ -23,7 +23,7 @@ interface CreatePostArgs {
 export function useSoltweet2Program() {
   const { connection } = useConnection()
   const { cluster } = useCluster()
-  const transactionToast = useTransactionToast()
+
   const provider = useAnchorProvider()
   const programId = useMemo(() => getSoltweet2ProgramId(cluster.network as Cluster), [cluster])
   const program = useMemo(() => getSoltweet2Program(provider, programId), [provider, programId])
@@ -47,7 +47,6 @@ export function useSoltweet2ProgramAccount() {
   const { publicKey } = useWallet()
 
   const programId = useMemo(() => getSoltweet2ProgramId(cluster.network as Cluster), [cluster])
-
   const [profileAccount] = PublicKey.findProgramAddressSync(
     [Buffer.from('profile', 'utf8'), publicKey!.toBuffer()],
     programId,

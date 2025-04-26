@@ -2,7 +2,7 @@
 
 use anchor_lang::prelude::*;
 
-declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
+declare_id!("7nSiiBMoaNSv4VVTWT63JFVDs94TncY9RLcVZ2kRxgJR");
 
 #[program]
 pub mod soltweet2 {

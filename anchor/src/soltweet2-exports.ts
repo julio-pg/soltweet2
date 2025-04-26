@@ -12,7 +12,10 @@ export const SOLTWEET2_PROGRAM_ID = new PublicKey(Soltweet2IDL.address)
 
 // This is a helper function to get the Soltweet2 Anchor program.
 export function getSoltweet2Program(provider: AnchorProvider, address?: PublicKey) {
-  return new Program({ ...Soltweet2IDL, address: address ? address.toBase58() : Soltweet2IDL.address } as Soltweet2, provider)
+  return new Program(
+    { ...Soltweet2IDL, address: address ? address.toBase58() : Soltweet2IDL.address } as Soltweet2,
+    provider,
+  )
 }
 
 // This is a helper function to get the program ID for the Soltweet2 program depending on the cluster.
@@ -21,7 +24,7 @@ export function getSoltweet2ProgramId(cluster: Cluster) {
     case 'devnet':
     case 'testnet':
       // This is the program ID for the Soltweet2 program on devnet and testnet.
-      return new PublicKey('coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF')
+      return new PublicKey('7nSiiBMoaNSv4VVTWT63JFVDs94TncY9RLcVZ2kRxgJR')
     case 'mainnet-beta':
     default:
       return SOLTWEET2_PROGRAM_ID
